@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+
+<body class="bg-gray-100">
+    <div class="pb-6">{% include 'navbar.html' %}</div>
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
+        <div class="max-w-xl mx-auto rounded shadow">
+            <!-- Dynamic post fetch form database-->
+            {% for post in posts%}
+            <div class="p-6 border-gray-300 border-1 space-y-6">
+                <h2 class="text-lg font-semibold text-gray-800">{{ post.content }}</h2>
+                <p class="text-sm text-gray-600">Tags: {{ post.tags }}</p>
+                <div class=" flex">
+                    <button class="bg-blue-100 text-sm p-2 rounded text-blue-700 flex">
+                        {% if post.id %}
+                        <a href="{% url 'comment' post.id %}"
+                            class="bg-blue-100 text-sm p-2 rounded text-blue-700 flex">
+                            Comment
+                        </a>
+                        {% else %}
+                        <span class="text-red-500 text-sm">Invalid Post</span>
+                        {% endif %}
+
+
+                    </button>
+                </div>
+            </div>
+            <div class=" flex justify-center p-2">
+                {% if post.image %}
+                <img src="{{ post.image.url }}" alt="Post Image" class=" justify-center w-full max-w-sm rounded" />
+                {% endif %}
+            </div>
+            <hr>
+            {% empty %}
+            <p> No post found </p>
+            {% endfor %}
+        </div>
+
+
+
+
+
+    </div>
+</body>
+
+</html>

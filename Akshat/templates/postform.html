@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="pb-6">{% include 'navbar.html' %}</div>
+  <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
+    <form action="/test/post/" method="POST" class="space-y-6" enctype="multipart/form-data">
+    {% csrf_token %}
+
+      <h2 class="text-2xl font-semibold text-gray-700">Post Content</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Type your content here !</label>
+          <textarea type="text" id="content" name="content" required cols="75"
+            class="mt-1  border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </textarea>
+        </div>
+        
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Tags</label>
+          <input type="text" id="tags" name="tags" placeholder="#abc"
+            class="mt-1 block w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mt-4">Post Image</label>
+        <input type="file" id="image" name="image" accept="image/*"
+          class="mt-1 block w-full border border-gray-300 rounded px-3 py-2 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+      </div>
+
+      <div class="pt-4">
+        <button type="submit"
+          class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition">
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+
+</body>
+</html>

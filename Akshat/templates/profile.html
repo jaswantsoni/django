@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen font-sans">
+  <div class="pb-6">{% include 'navbar.html' %}</div>
+
+  <div class="max-w-3xl mx-auto bg-white p-10 rounded-2xl shadow-lg mt-6">
+
+    <div class="flex items-center space-x-6">
+      {% if user.dp %}
+      <img src="{{ user.dp.url }}" alt="Profile Picture"
+        class="w-24 h-24 rounded-full border-4 border-blue-500 shadow-sm" />
+      {% else %}
+      <div class="w-24 h-24 rounded-full bg-blue-200 flex items-center justify-center text-white font-bold text-xl">
+        {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+      </div>
+      {% endif %}
+      <div>
+        <h1 class="text-3xl font-bold text-gray-800">{{ user.first_name }} {{ user.last_name }}</h1>
+        <p class="text-gray-500 text-sm mt-1">@{{ user.username }}</p>
+      </div>
+    </div>
+
+
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Personal Information</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm text-gray-600">First Name</label>
+          <p class="text-gray-800 font-medium">{{ user.first_name }}</p>
+        </div>
+        <div>
+          <label class="block text-sm text-gray-600">Last Name</label>
+          <p class="text-gray-800 font-medium">{{ user.last_name }}</p>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Contact Information</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm text-gray-600">Email</label>
+          <p class="text-gray-800 font-medium">{{ user.email }}</p>
+        </div>
+        <div>
+          <label class="block text-sm text-gray-600">Phone</label>
+          <p class="text-gray-800 font-medium">{{ user.phone }}</p>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Tech Book Profile</h2>
+      <div>
+        <label class="block text-sm text-gray-600">Username</label>
+        <p class="text-gray-800 font-medium">{{ user.username }}</p>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,25 +21,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9!#4fd7gk5qbrv^3hknj2dnl816eunwwg_pb14cp!vp-3yl&0@'
+SECRET_KEY = 'django-insecure-hba=glr$oz1(2rwi)^+npxuoisci0#4t=$vxot8vur*)yqtjo3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'testApp.User'
+AUTH_USER_MODEL = 'akshat.User'
+LOGIN_URL = '/test/login/'
+LOGIN_REDIRECT_URL = '/test/login'
 
-LOGIN_URL = '/login/'  # or your login page URL
-LOGIN_REDIRECT_URL = '/test/dashboard/'  # where to redirect after login
-
-
-
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = BASE_DIR / 'uploads'
 
 # Application definition
 
 INSTALLED_APPS = [
-    'testApp',
+    'akshat',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -63,7 +62,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'testApp/templates')],  # Directory for custom templates
+        'DIRS': [os.path.join(BASE_DIR, 'testapp/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,6 +72,7 @@ TEMPLATES = [
             ],
         },
     },
+    
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -83,8 +83,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django',
+        'USER': "root",
+        'PASSWORD': 'akshat123456',
+        'HOST': 'localhost',
+        'PORT': '3306',
+
     }
 }
 
@@ -124,14 +129,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# During development
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Optional global static files folder
-]
-
-# For production use (when collecting all static files)
-STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
