@@ -24,6 +24,4 @@ urlpatterns = [
     path("test/", include("testApp.urls")),
     path('accounts/', include('django.contrib.auth.urls')),
     path('', views.dashboard, name='dashboard'),  # Root URL
-
-
 ]
