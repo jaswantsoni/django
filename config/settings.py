@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'testApp.User'
 
-LOGIN_URL = '/login/'  # or your login page URL
+LOGIN_URL = '/accounts/login/'  # or your login page URL
 LOGIN_REDIRECT_URL = '/test/dashboard/'  # where to redirect after login
 
 
