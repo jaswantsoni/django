@@ -28,9 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'akshat.User'
-LOGIN_URL = '/test/login/'
-LOGIN_REDIRECT_URL = '/test/login'
+AUTH_USER_MODEL = 'skillSwap.User'
+LOGIN_URL = '/skill-swap/login/'
+LOGIN_REDIRECT_URL = '/skill-swap/login'
 
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = BASE_DIR / 'uploads'
@@ -38,7 +38,8 @@ MEDIA_ROOT = BASE_DIR / 'uploads'
 # Application definition
 
 INSTALLED_APPS = [
-    'akshat',
+    # 'akshat',
+    'skillSwap',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,7 +63,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'testapp/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'skill-swap/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -27,7 +27,7 @@ urlpatterns = [
     #path('comment/<int:post_id/', views.comment_views, name="comment"),
     path('comment/<int:post_id>/', views.comment_views, name="comment"),
     path('login/', views.login_view, name="login"),
-    path('dashboard/', views.dashboard, name="dashboard"),
+    path('', views.dashboard, name="dashboard"),
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile, name="profile"),
 ]
