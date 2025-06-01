@@ -18,12 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 from testApp import views
 
+#to change text on django admin site
+admin.site.site_header = "Movie Reviewer Authentication"
+admin.site.site_title = "Movie Review"
+admin.site.index_title = "Welcome! Reviewer"
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("test/", include("testApp.urls")),
+    path('', include("testApp.urls")),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('', views.dashboard, name='dashboard'),  # Root URL
+    #path('', views.welcome_page, name='Welcome Page'),  # Root URL
 
 
 ]

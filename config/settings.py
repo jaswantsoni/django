@@ -40,6 +40,7 @@ LOGIN_REDIRECT_URL = '/test/dashboard/'  # where to redirect after login
 
 INSTALLED_APPS = [
     'testApp',
+    'testApp.apps.TestappConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
