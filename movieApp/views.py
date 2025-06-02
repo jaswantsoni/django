@@ -12,7 +12,6 @@ def home(request):
     )
     genres = Genre.objects.all()
     
-    # Filter by genre if specified
     genre_filter = request.GET.get('genre')
     if genre_filter:
         movies = movies.filter(genre__name=genre_filter)
