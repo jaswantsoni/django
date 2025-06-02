@@ -9,7 +9,7 @@ class SkillSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'is_verified', 'bio', 'skills_can_teach', 'skills_want_to_learn']
+        fields = ['id', 'username', 'bio', 'skills_can_teach', 'skills_want_to_learn']
 
 class SkillSessionSerializer(serializers.ModelSerializer):
     class Meta:

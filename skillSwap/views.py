@@ -13,7 +13,7 @@ class SkillViewSet(viewsets.ModelViewSet):
 class SkillSessionViewSet(viewsets.ModelViewSet):
     queryset = SkillSession.objects.all()
     serializer_class = SkillSessionSerializer
-    permission_classes = [IsVerifiedUser]
+    # permission_classes = [AllowAny]
 
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
