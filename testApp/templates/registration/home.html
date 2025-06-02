@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Fitness Tracker{% endblock %}
+
+{% block content %}
+<h2 class="text-3xl font-extrabold text-gray-900 text-center mb-6">Your Fitness Dashboard</h2>
+
+<div class="mb-8 p-6 bg-indigo-50 rounded-lg shadow-inner">
+    <h3 class="text-2xl font-semibold text-indigo-800 mb-4">Add New Activity</h3>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {% for field in fitness_entry_form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        {% if fitness_entry_form.non_field_errors %}
+            <div class="text-red-500 text-sm mb-4">
+                {% for error in fitness_entry_form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <button type="submit" class="w-full py-3 px-4 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-300">
+            Log Activity
+        </button>
+    </form>
+</div>
+
+<div class="w-full">
+    <h3 class="text-2xl font-semibold text-gray-900 mb-4">Your Recent Activities</h3>
+    {% if fitness_entries %}
+        <ul class="space-y-4">
+            {% for entry in fitness_entries %}
+                <li class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xl font-bold text-indigo-700">{{ entry.activity_type }}</span>
+                        <span class="text-sm text-gray-500">{{ entry.date_recorded|date:"M d, Y H:i" }}</span>
+                    </div>
+                    <p class="text-gray-700 mb-2">
+                        Duration: <span class="font-semibold">{{ entry.duration_minutes }} minutes</span>
+                    </p>
+                    {% if entry.notes %}
+                        <p class="text-gray-600 text-sm italic">"{{ entry.notes }}"</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-gray-600 text-center py-8">No fitness activities logged yet. Start by adding one above!</p>
+    {% endif %}
+</div>
+{% endblock %}

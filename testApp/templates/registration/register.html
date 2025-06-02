@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
+
+{% block title %}Register - Fitness Tracker{% endblock %}
+
 {% block content %}
-<h2 class="text-3xl font-extrabold text-gray-900 text-center mb-6">Login</h2>
+<h2 class="text-3xl font-extrabold text-gray-900 text-center mb-6">Register</h2>
 <form method="post" class="space-y-6">
     {% csrf_token %}
-    {% for field in login_form %}
+    {% for field in register_form %}
         <div class="mb-4">
             <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
                 {{ field.label }}
@@ -17,18 +20,18 @@
             {% endfor %}
         </div>
     {% endfor %}
-    {% if login_form.non_field_errors %}
+    {% if register_form.non_field_errors %}
         <div class="text-red-500 text-sm mb-4">
-            {% for error in login_form.non_field_errors %}
+            {% for error in register_form.non_field_errors %}
                 <p>{{ error }}</p>
             {% endfor %}
         </div>
     {% endif %}
     <button type="submit" class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-300">
-        Login
+        Register
     </button>
 </form>
 <p class="mt-6 text-center text-gray-600">
-    Don't have an account? <a href="{% url 'register' %}" class="font-medium text-indigo-600 hover:text-indigo-500">Register here</a>.
+    Already have an account? <a href="{% url 'login' %}" class="font-medium text-indigo-600 hover:text-indigo-500">Login here</a>.
 </p>
 {% endblock %}
