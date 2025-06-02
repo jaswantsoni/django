@@ -1,0 +1,68 @@
+{% extends 'crypto_tracker/base.html' %}
+
+{% block title %}Crypto Tracker - Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Trending Coins Section -->
+    <div class="col-md-8">
+        <h2>Trending Coins</h2>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for coin in trending_coins %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ coin.item.name }}</h5>
+                        <p class="card-text">
+                            <small class="text-muted">Symbol: {{ coin.item.symbol }}</small>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'crypto_tracker:coin_detail' coin.item.id %}" class="btn btn-primary">View Details</a>
+                            <form method="post" action="{% url 'crypto_tracker:add_watch_entry' %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="coin_symbol" value="{{ coin.item.id }}">
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="bi bi-star"></i> Watch
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Popular Coins Section -->
+    <div class="col-md-4">
+        <h2>Popular Coins</h2>
+        <div class="list-group">
+            {% for coin in popular_coins %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                {{ coin.coin_symbol }}
+                <span class="badge bg-primary rounded-pill">{{ coin.watchers_count }} watchers</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- User's Watchlist -->
+        <h2 class="mt-4">My Watchlist</h2>
+        <div class="list-group">
+            {% for watch in user_watches %}
+            <div class="list-group-item">
+                <h5 class="mb-1">{{ watch.coin_symbol }}</h5>
+                {% if watch.personal_note %}
+                <p class="mb-1">{{ watch.personal_note }}</p>
+                {% endif %}
+                {% if watch.image %}
+                <img src="{{ watch.image.url }}" class="img-fluid mt-2" alt="Market pattern">
+                {% endif %}
+                <small class="text-muted">Added: {{ watch.created_at|date:"M d, Y" }}</small>
+            </div>
+            {% empty %}
+            <p class="text-muted">You haven't added any coins to your watchlist yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -17,13 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from testApp import views
-
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.generic import RedirectView
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("test/", include("testApp.urls")),
+    path('test/', include('testApp.urls')),
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='crypto_tracker/login.html'), name='login'),
+    path('accounts/logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('', views.dashboard, name='dashboard'),  # Root URL
-
-
-]
+    path('crypto/', include('crypto_tracker.urls')),
+    path('', RedirectView.as_view(url='/crypto/', permanent=False)),  # Redirect root to crypto app
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

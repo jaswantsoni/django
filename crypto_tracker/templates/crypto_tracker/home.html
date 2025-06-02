@@ -1,0 +1,91 @@
+{% extends 'crypto_tracker/base.html' %}
+
+{% block title %}Home - Crypto Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        {% csrf_token %}
+        <!-- Create Post Button -->
+        <div class="mb-4">
+            <a href="{% url 'crypto_tracker:create_post' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New Post
+            </a>
+        </div>
+
+        <!-- Posts Feed -->
+        {% for post in posts %}
+        <div class="card mb-4">
+            {% if post.image %}
+            <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ post.title }}</h5>
+                <p class="card-text">{{ post.content }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">
+                            Posted by {{ post.user.username }} on {{ post.created_at|date:"M d, Y" }}
+                        </small>
+                        {% if post.coin_symbol %}
+                        <span class="badge bg-info ms-2">{{ post.coin_symbol }}</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-primary like-button" data-post-id="{{ post.id }}">
+                            <i class="bi {% if request.user in post.likes.all %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+                            <span class="likes-count">{{ post.total_likes }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center">
+            <h3>No posts yet</h3>
+            <p>Be the first to share your crypto insights!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeButtons = document.querySelectorAll('.like-button');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    likeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            fetch(`/crypto/like-post/${postId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const icon = this.querySelector('i');
+                const countSpan = this.querySelector('.likes-count');
+                
+                if (data.liked) {
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill');
+                } else {
+                    icon.classList.remove('bi-heart-fill');
+                    icon.classList.add('bi-heart');
+                }
+                
+                countSpan.textContent = data.likes;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+});
+</script>
+{% endblock %} 

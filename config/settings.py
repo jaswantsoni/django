@@ -30,8 +30,8 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'testApp.User'
 
-LOGIN_URL = '/accounts/login/'  # or your login page URL
-LOGIN_REDIRECT_URL = '/test/dashboard/'  # where to redirect after login
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/crypto/'  # Redirect to crypto app after login
 
 
 
@@ -40,6 +40,7 @@ LOGIN_REDIRECT_URL = '/test/dashboard/'  # where to redirect after login
 
 INSTALLED_APPS = [
     'testApp',
+    'crypto_tracker',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -63,7 +64,10 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'testApp/templates')],  # Directory for custom templates
+        'DIRS': [
+            os.path.join(BASE_DIR, 'testApp/templates'),
+            os.path.join(BASE_DIR, 'crypto_tracker/templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,3 +141,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Media files (User uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
