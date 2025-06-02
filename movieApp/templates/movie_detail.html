@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+<h2>{{ movie.title }}</h2>
+<p><strong>Genre:</strong> {{ movie.genre.name }}</p>
+
+{% if movie.reviews.exists %}
+    <h3>Average Scores</h3>
+    <p><strong>Storyline:</strong> {{ movie.average_storyline|floatformat:1 }}/10</p>
+    <p><strong>Visual:</strong> {{ movie.average_visual|floatformat:1 }}/10</p>
+    <p><strong>Soundtrack:</strong> {{ movie.average_soundtrack|floatformat:1 }}/10</p>
+{% endif %}
+
+{% if user.is_authenticated %}
+    <p><a href="{% url 'movie:create_review' %}?movie={{ movie.id }}">Add Your Review</a></p>
+{% endif %}
+
+<h3>Reviews</h3>
+{% for review in reviews %}
+    <section>
+        <p><strong>By:</strong> {{ review.author.username }}</p>
+        <p><strong>Storyline:</strong> {{ review.storyline_score }}/10</p>
+        <p><strong>Visual:</strong> {{ review.visual_score }}/10</p>
+        <p><strong>Soundtrack:</strong> {{ review.soundtrack_score }}/10</p>
+        <p><strong>Avg Score:</strong> {{ review.average_score|floatformat:1 }}/10</p>
+        <p>{{ review.comment }}</p>
+        {% if review.breakdown_pdf %}
+            <p><a href="{{ review.breakdown_pdf.url }}" target="_blank">View Breakdown PDF</a></p>
+        {% endif %}
+    </section>
+{% empty %}
+    <p>No reviews yet.</p>
+{% endfor %}

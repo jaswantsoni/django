@@ -15,6 +15,4 @@ def home(request):
     return HttpResponse("Hello, world. You're at the testApp index.")
 # Create your views here.
 
-def root(request):
-    return render(request, 'pages/page1.html')
 

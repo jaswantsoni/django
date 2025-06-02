@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+<h2>Browse Movies</h2>
+
+<form method="get">
+    <label for="genre">Filter by Genre:</label>
+    <select name="genre" onchange="this.form.submit()">
+        <option value="">All Genres</option>
+        {% for genre in genres %}
+            <option value="{{ genre.name }}" {% if genre.name == selected_genre %}selected{% endif %}>
+                {{ genre.name }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+
+{% for movie in movies %}
+    <section>
+        <h3><a href="{% url 'movie:movie_detail' movie.id %}">{{ movie.title }}</a></h3>
+        <p><strong>Genre:</strong> {{ movie.genre.name }}</p>
+        {% if movie.reviews.exists %}
+            <p>
+                <strong>Avg Storyline:</strong> {{ movie.average_storyline|floatformat:1 }} |
+                <strong>Avg Visual:</strong> {{ movie.average_visual|floatformat:1 }} |
+                <strong>Avg Soundtrack:</strong> {{ movie.average_soundtrack|floatformat:1 }}
+            </p>
+            <p><strong>Total Reviews:</strong> {{ movie.reviews.count }}</p>
+        {% else %}
+            <p>No reviews yet</p>
+        {% endif %}
+    </section>
+{% endfor %}

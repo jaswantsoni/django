@@ -28,10 +28,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'testApp.User'
+AUTH_USER_MODEL = 'auth.User'
 
-LOGIN_URL = '/login/'  # or your login page URL
-LOGIN_REDIRECT_URL = '/test/dashboard/'  # where to redirect after login
+LOGIN_URL = 'accounts/login/'  # or your login page URL
+LOGIN_REDIRECT_URL = 'registration/login.html'  # where to redirect after login
 
 
 
@@ -39,8 +39,8 @@ LOGIN_REDIRECT_URL = '/test/dashboard/'  # where to redirect after login
 # Application definition
 
 INSTALLED_APPS = [
-    'testApp',
-    'testApp.apps.TestappConfig',
+    #'testApp',
+    'movieApp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -64,7 +64,10 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'testApp/templates')],  # Directory for custom templates
+        'DIRS': [
+            os.path.join(BASE_DIR, 'testApp/templates'),
+            os.path.join(BASE_DIR, 'movieApp/templates'),
+            ],  # Directory for custom templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -124,7 +127,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
 # During development
 STATICFILES_DIRS = [
@@ -138,3 +141,13 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# For media upload support
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# Auth redirect
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = 'movie:create_review'
+LOGOUT_REDIRECT_URL='movie:welcome'

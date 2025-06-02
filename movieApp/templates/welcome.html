@@ -29,8 +29,8 @@
 
     <h1>Welcome</h1>
     <div class="button-container">
-        <a href="login.html" class="button">Post Your Reviews</a>
-        <a href="page1.html" class="button">Filter Movies</a>
+        <a href="{% url 'login' %}" class="button">Post Your Reviews</a>
+        <a href="{% url 'movie:home' %}" class="button">Filter Movies</a>
     </div>
 
 </body>

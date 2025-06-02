@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Post, Comment
+from .models import User, Movie, Review, Genre
 from django.contrib.auth.password_validation import validate_password
 
 # User Serializer
@@ -14,13 +14,13 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 # Post Serializer
-class PostSerializer(serializers.ModelSerializer):
+class MovieSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Post
-        fields = ['id', 'author', 'title', 'content', 'created_at']
+        model = Movie
+        fields = ['genre', 'description', 'title', 'content', 'created_at']
 
 # Comment Serializer
-class CommentSerializer(serializers.ModelSerializer):
+class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Comment
-        fields = ['id', 'author', 'post', 'content', 'created_at']
+        model = Review
+        fields = ['user', 'movie', 'comment', 'visual_score', 'storyline_score', 'soundtrack_score', 'breakdown_pdf', 'created_at']
