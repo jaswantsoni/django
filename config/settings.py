@@ -38,8 +38,8 @@ MEDIA_ROOT = BASE_DIR / 'uploads'
 # Application definition
 
 INSTALLED_APPS = [
-    # 'akshat',
     'skillSwap',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
