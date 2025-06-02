@@ -16,7 +16,7 @@ LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
 INSTALLED_APPS = [
-    'testApp', # Your app is listed first
+    'fitnessApp', # Your app is listed first
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,7 +40,7 @@ ROOT_URLCONF = 'config.urls' # Ensure this matches your project name if differen
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'testApp', 'templates', 'registration')], # <--- IMPORTANT: Changed to include 'registration'
+        'DIRS': [os.path.join(BASE_DIR, 'fitnessApp', 'templates', 'registration')], # <--- IMPORTANT: Changed to include 'registration'
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
