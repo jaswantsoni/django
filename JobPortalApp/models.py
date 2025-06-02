@@ -6,7 +6,7 @@ class User(AbstractUser):
     is_recruiter = models.BooleanField(default=False)
 
 
-class JobPosts(models.Model):
+class JobPost(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     posted_by = models.ForeignKey(
@@ -19,5 +19,5 @@ class Application(models.Model):
     candidate = models.ForeignKey(
         User, on_delete=models.CASCADE, limit_choices_to={"is_recruiter": False}
     )
-    job_post = models.ForeignKey(JobPosts, on_delete=models.CASCADE)
+    job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
