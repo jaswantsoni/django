@@ -17,11 +17,12 @@
 - RatingSerializers - model - Rating, fields - __all__
 
 ### Working URLs
-- Add Skills - POST - http://127.0.0.1:8000/skill-swap/skills/
-    -  Value -   {
-                "name": "Python"
-                  }
-- Get Users - GET - http://127.0.0.1:8000/skill-swap/users/
+```
+    "skills": "http://127.0.0.1:8000/skill-swap/skills/",
+    "sessions": "http://127.0.0.1:8000/skill-swap/sessions/",
+    "ratings": "http://127.0.0.1:8000/skill-swap/ratings/",
+    "users": "http://127.0.0.1:8000/skill-swap/users/"
+```
 
 ### Future Updates
 | Action              | Method   | Endpoint                          |
