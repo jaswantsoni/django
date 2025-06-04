@@ -1,26 +1,34 @@
 from rest_framework import serializers
 from .models import User, Post, Comment
-from django.contrib.auth.password_validation import validate_password
 
-# User Serializer
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, validators=[validate_password])
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password']
-
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'joined_at']
+        read_only_fields = ['joined_at']
+        extra_kwargs = {'password': {'write_only': True}}
+    
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
 
-# Post Serializer
-class PostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ['id', 'author', 'title', 'content', 'created_at']
-
-# Comment Serializer
 class CommentSerializer(serializers.ModelSerializer):
+    author_username = serializers.ReadOnlyField(source='author.username')
+    
     class Meta:
         model = Comment
-        fields = ['id', 'author', 'post', 'content', 'created_at']
+        fields = ['id', 'post', 'author', 'author_username', 'content', 'created_at']
+        read_only_fields = ['created_at', 'author']
+
+class PostSerializer(serializers.ModelSerializer):
+    author_username = serializers.ReadOnlyField(source='author.username')
+    comments = CommentSerializer(many=True, read_only=True)
+    comment_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'content', 'author', 'author_username', 'created_at', 'comments', 'comment_count']
+        read_only_fields = ['created_at', 'author']
+    
+    def get_comment_count(self, obj):
+        return obj.comments.count()
