@@ -28,6 +28,6 @@ urlpatterns = [
     path('accounts/login/', auth_views.LoginView.as_view(template_name='crypto_tracker/login.html'), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('crypto/', include('crypto_tracker.urls')),
+    path('crypto/', include('crypto_tracker.urls')),  # This now includes both regular and API endpoints
     path('', RedirectView.as_view(url='/crypto/', permanent=False)),  # Redirect root to crypto app
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

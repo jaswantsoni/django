@@ -68,13 +68,10 @@ def coin_detail(request, coin_id):
         coin_symbol=coin_id
     ).first()
     
-    # Get investment count
     investment_count = Investment.objects.filter(coin_symbol=coin_id).count()
     
-    # Get recent posts about this coin
     recent_posts = Post.objects.filter(coin_symbol=coin_id).order_by('-created_at')[:5]
     
-    # Get coin popularity
     coin_popularity = WatchEntry.get_coin_popularity()
     watchers_count = next((item['watchers_count'] for item in coin_popularity if item['coin_symbol'] == coin_id), 0)
     
