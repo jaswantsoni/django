@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import FitnessEntry 
 
+from .models import User
+from django.contrib.auth.admin import UserAdmin
 
-admin.site.register(FitnessEntry)
+admin.site.register(User)

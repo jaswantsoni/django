@@ -8,8 +8,9 @@ SECRET_KEY = 'django-insecure-9!#4fd7gk5qbrv^3hknj2dnl816eunwwg_pb14cp!vp-3yl&0@
 DEBUG = True
 
 ALLOWED_HOSTS = []
+AUTH_USER_MODEL = 'User'
 
-# AUTH_USER_MODEL = 'testApp.User' # THIS LINE HAS BEEN REMOVED/COMMENTED OUT TO USE DEFAULT USER MODEL
+AUTH_USER_MODEL = 'fitnessApp.User' # THIS LINE HAS BEEN REMOVED/COMMENTED OUT TO USE DEFAULT USER MODEL
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
@@ -23,7 +24,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
