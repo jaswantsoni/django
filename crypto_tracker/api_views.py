@@ -10,17 +10,17 @@ from .services import CryptoService
 
 class WatchEntryViewSet(viewsets.ModelViewSet):
     serializer_class = WatchEntrySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        return WatchEntry.objects.filter(user=self.request.user)
+        return WatchEntry.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
 class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         queryset = Post.objects.all().select_related('user')
@@ -48,10 +48,10 @@ class PostViewSet(viewsets.ModelViewSet):
 
 class InvestmentViewSet(viewsets.ModelViewSet):
     serializer_class = InvestmentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        return Investment.objects.filter(user=self.request.user)
+        return Investment.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

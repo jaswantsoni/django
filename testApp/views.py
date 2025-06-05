@@ -17,7 +17,6 @@ def contact(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            # Here you would typically send an email or save to database
             messages.success(request, 'Thank you for your message! We will get back to you soon.')
             return redirect('contact')
     else:
@@ -26,7 +25,6 @@ def contact(request):
 
 @login_required
 def dashboard(request):
-    # Only logged in users can access this
     if request.user.is_authenticated:
         return render(request, 'pages/dashboard.html')
 

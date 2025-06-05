@@ -4,8 +4,6 @@ from django.db.models import Count
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-# Create your models here.
-
 class WatchEntry(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='watch_entries')
     coin_symbol = models.CharField(max_length=10)

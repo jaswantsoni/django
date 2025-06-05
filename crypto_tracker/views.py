@@ -11,151 +11,130 @@ from testApp.models import User
 from django import forms
 import json
 
-class CustomUserCreationForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password1', 'password2')
+from django.views.generic import ListView, DetailView, CreateView, FormView, RedirectView, View, TemplateView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import UserCreationForm
 
-# Create your views here.
 
-@login_required
-def coin_list(request):
-    trending_coins = CryptoService.get_trending_coins()
-    user_watches = WatchEntry.objects.filter(user=request.user)
-    popular_coins = WatchEntry.get_coin_popularity()
+class HomeView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'crypto_tracker/home.html'
+    context_object_name = 'posts' 
+    ordering = ['-created_at']
+    paginate_by = 5 
     
-    context = {
-        'trending_coins': trending_coins,
-        'user_watches': user_watches,
-        'popular_coins': popular_coins,
-    }
-    return render(request, 'crypto_tracker/coin_list.html', context)
+    
 
-@login_required
-def add_watch_entry(request):
-    if request.method == 'POST':
-        coin_symbol = request.POST.get('coin_symbol')
-        personal_note = request.POST.get('personal_note', '')
-        image = request.FILES.get('image')
+class CoinListView(LoginRequiredMixin, TemplateView):
+    template_name = 'crypto_tracker/coin_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['trending_coins'] = CryptoService.get_trending_coins()
+        context['user_watches'] = WatchEntry.objects.filter(user=self.request.user)
+        context['popular_coins'] = WatchEntry.get_coin_popularity()
+        return context
+
+class AddWatchEntryView(LoginRequiredMixin, CreateView):
+    model = WatchEntry
+    fields = ['coin_symbol', 'personal_note', 'image']
+    template_name = 'crypto_tracker/coin_list.html' 
+    success_url = reverse_lazy('crypto_tracker:coin_list')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        messages.success(self.request, f'Successfully added {form.instance.coin_symbol} to your watchlist!')
+        return super().form_valid(form)
         
-        watch_entry, created = WatchEntry.objects.get_or_create(
-            user=request.user,
-            coin_symbol=coin_symbol,
-            defaults={
-                'personal_note': personal_note,
-                'image': image
-            }
-        )
+    def form_invalid(self, form):
+        messages.error(self.request, 'Failed to add watch entry.')
+        return super().form_invalid(form)
+
+class CoinDetailView(LoginRequiredMixin, DetailView):
+    model = WatchEntry
+    template_name = 'crypto_tracker/coin_detail.html'
+    slug_field = 'coin_symbol'
+    slug_url_kwarg = 'coin_id'
+
+    def get_object(self, queryset=None):
+        queryset = queryset or self.get_queryset()
+        coin_id = self.kwargs.get(self.slug_url_kwarg)
+        try:
+            return queryset.get(user=self.request.user, coin_symbol=coin_id)
+        except WatchEntry.DoesNotExist:
+            return None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        coin_id = self.kwargs.get(self.slug_url_kwarg)
         
-        if not created:
-            watch_entry.personal_note = personal_note
-            if image:
-                watch_entry.image = image
-            watch_entry.save()
-            
-        messages.success(request, f'Successfully added {coin_symbol} to your watchlist!')
-        return redirect('crypto_tracker:coin_list')
-    
-    return redirect('crypto_tracker:coin_list')
-
-@login_required
-def coin_detail(request, coin_id):
-    price_data = CryptoService.get_coin_price(coin_id)
-    history_data = CryptoService.get_coin_history(coin_id)
-    print(f"History data for {coin_id}: {history_data}")
-    watch_entry = WatchEntry.objects.filter(
-        user=request.user,
-        coin_symbol=coin_id
-    ).first()
-    
-    investment_count = Investment.objects.filter(coin_symbol=coin_id).count()
-    
-    recent_posts = Post.objects.filter(coin_symbol=coin_id).order_by('-created_at')[:5]
-    
-    coin_popularity = WatchEntry.get_coin_popularity()
-    watchers_count = next((item['watchers_count'] for item in coin_popularity if item['coin_symbol'] == coin_id), 0)
-    
-    context = {
-        'coin_id': coin_id,
-        'price_data': price_data,
-        'history_data': history_data if history_data else {},
-        'watch_entry': watch_entry,
-        'investment_count': investment_count,
-        'recent_posts': recent_posts,
-        'watchers_count': watchers_count,
-    }
-    return render(request, 'crypto_tracker/coin_detail.html', context)
-
-@login_required
-def get_coin_price(request, coin_id):
-    price_data = CryptoService.get_coin_price(coin_id)
-    if price_data:
-        return JsonResponse(price_data)
-    return JsonResponse({'error': 'Failed to fetch price data'}, status=400)
-
-def register(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, 'Registration successful!')
-            return redirect('crypto_tracker:home')
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'crypto_tracker/register.html', {'form': form})
-
-@login_required
-def home(request):
-    posts = Post.objects.all().select_related('user')
-    return render(request, 'crypto_tracker/home.html', {'posts': posts})
-
-@login_required
-def create_post(request):
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        content = request.POST.get('content')
-        image = request.FILES.get('image')
-        coin_symbol = request.POST.get('coin_symbol', '')
+        context['coin_id'] = coin_id
+        context['price_data'] = CryptoService.get_coin_price(coin_id)
+        context['history_data'] = CryptoService.get_coin_history(coin_id) if CryptoService.get_coin_history(coin_id) else {}
         
-        post = Post.objects.create(
-            user=request.user,
-            title=title,
-            content=content,
-            image=image,
-            coin_symbol=coin_symbol
-        )
-        messages.success(request, 'Post created successfully!')
-        return redirect('crypto_tracker:home')
-    return render(request, 'crypto_tracker/create_post.html')
-
-@login_required
-def like_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    if request.user in post.likes.all():
-        post.likes.remove(request.user)
-        liked = False
-    else:
-        post.likes.add(request.user)
-        liked = True
-    return JsonResponse({'likes': post.total_likes(), 'liked': liked})
-
-@login_required
-def add_investment(request):
-    if request.method == 'POST':
-        coin_symbol = request.POST.get('coin_symbol')
-        amount = request.POST.get('amount')
-        price_data = CryptoService.get_coin_price(coin_symbol)
+        context['investment_count'] = Investment.objects.filter(coin_symbol=coin_id).count()
+        context['recent_posts'] = Post.objects.filter(coin_symbol=coin_id).order_by('-created_at')[:5]
         
-        if price_data and coin_symbol in price_data:
-            investment = Investment.objects.create(
-                user=request.user,
-                coin_symbol=coin_symbol,
-                amount=amount,
-                price_at_purchase=price_data[coin_symbol]['usd']
-            )
-            messages.success(request, f'Investment in {coin_symbol} recorded!')
+        coin_popularity = WatchEntry.get_coin_popularity()
+        context['watchers_count'] = next((item['watchers_count'] for item in coin_popularity if item['coin_symbol'] == coin_id), 0)
+        
+        return context
+
+class GetCoinPriceView(View):
+    def get(self, request, coin_id):
+        price_data = CryptoService.get_coin_price(coin_id)
+        if price_data:
+            return JsonResponse(price_data)
+        return JsonResponse({'error': 'Failed to fetch price data'}, status=400)
+
+class RegisterView(CreateView):
+    template_name = 'crypto_tracker/register.html'
+    form_class = UserCreationForm
+    success_url = reverse_lazy('crypto_tracker:home')
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        messages.success(self.request, 'Registration successful!')
+        return super().form_valid(form)
+
+class CreatePostView(LoginRequiredMixin, CreateView):
+    model = Post
+    fields = ['title', 'content', 'image', 'coin_symbol']
+    template_name = 'crypto_tracker/create_post.html'
+    success_url = reverse_lazy('crypto_tracker:home')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        messages.success(self.request, 'Post created successfully!')
+        return super().form_valid(form)
+
+class LikePostView(LoginRequiredMixin, View):
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+            liked = False
         else:
-            messages.error(request, 'Failed to get current price data')
-    
-    return redirect('crypto_tracker:coin_detail', coin_id=coin_symbol)
+            post.likes.add(request.user)
+            liked = True
+        return JsonResponse({'likes': post.total_likes(), 'liked': liked})
+
+class AddInvestmentView(LoginRequiredMixin, CreateView):
+    model = Investment
+    fields = ['coin_symbol', 'amount']
+    template_name = 'crypto_tracker/coin_detail.html' 
+    success_url = reverse_lazy('crypto_tracker:home')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+       
+        price_data = CryptoService.get_coin_price(coin_symbol)
+        if price_data and coin_symbol in price_data:
+            form.instance.price_at_purchase = price_data[coin_symbol]['usd']
+            messages.success(self.request, f'Investment in {coin_symbol} recorded!')
+            return super().form_valid(form)
+        else:
+            messages.error(self.request, 'Failed to get current price data for investment.')
+            return self.form_invalid(form)
