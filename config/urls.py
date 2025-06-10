@@ -31,4 +31,5 @@ router.register(r'users', UserViewSet, basename='users')
 urlpatterns = [
 path('admin/', admin.site.urls),
 path('skill-swap/', include(router.urls)),
+path("api/", include)
 ]
