@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .api_views import WatchEntryViewSet, PostViewSet, InvestmentViewSet
+from .api_views import WatchEntryViewSet, PostViewSet, InvestmentViewSet, UserViewSet
 
 app_name = 'crypto_tracker'
 
@@ -9,6 +9,7 @@ router = DefaultRouter()
 router.register(r'watch-entries', WatchEntryViewSet, basename='watch-entry')
 router.register(r'posts', PostViewSet, basename='post')
 router.register(r'investments', InvestmentViewSet, basename='investment')
+router.register(r'users', UserViewSet, basename='user')
 
 urlpatterns = [
    

@@ -4,9 +4,20 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import WatchEntry, Post, Investment
 from .serializers import (
-    WatchEntrySerializer, PostSerializer, InvestmentSerializer
+    WatchEntrySerializer, PostSerializer, InvestmentSerializer, UserSerializer
 )
 from .services import CryptoService
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return User.objects.all()
+
 
 class WatchEntryViewSet(viewsets.ModelViewSet):
     serializer_class = WatchEntrySerializer

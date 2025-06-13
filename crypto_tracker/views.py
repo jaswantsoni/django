@@ -22,7 +22,7 @@ class HomeView(LoginRequiredMixin, ListView):
     template_name = 'crypto_tracker/home.html'
     context_object_name = 'posts' 
     ordering = ['-created_at']
-    paginate_by = 5 
+    paginate_by = 4 
     
     
 
@@ -43,13 +43,26 @@ class AddWatchEntryView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('crypto_tracker:coin_list')
 
     def form_valid(self, form):
+        
+        coin_symbol = form.cleaned_data['coin_symbol']
+        existing_entry = WatchEntry.objects.filter(user=self.request.user, coin_symbol=coin_symbol).exists()
+
+        if existing_entry:
+            messages.error(self.request, f'{coin_symbol} is already in your watchlist.')
+            return redirect(self.success_url) 
+
         form.instance.user = self.request.user
         messages.success(self.request, f'Successfully added {form.instance.coin_symbol} to your watchlist!')
         return super().form_valid(form)
         
     def form_invalid(self, form):
-        messages.error(self.request, 'Failed to add watch entry.')
-        return super().form_invalid(form)
+        messages.error(self.request, 'Failed to add watch entry. Please check the form data.')
+        # Manually render the template with context data similar to CoinListView
+        context = self.get_context_data(form=form)
+        context['trending_coins'] = CryptoService.get_trending_coins()
+        context['user_watches'] = WatchEntry.objects.filter(user=self.request.user)
+        context['popular_coins'] = WatchEntry.get_coin_popularity()
+        return render(self.request, self.template_name, context)
 
 class CoinDetailView(LoginRequiredMixin, DetailView):
     model = WatchEntry
@@ -138,3 +151,14 @@ class AddInvestmentView(LoginRequiredMixin, CreateView):
         else:
             messages.error(self.request, 'Failed to get current price data for investment.')
             return self.form_invalid(form)
+
+def sync_view(request):
+    return "this is a synchronous view"
+
+async def async_view(request):
+    return "this is a asynchrounous view"
+
+async def calling_sync_view(request):
+    response = sync_view(request)
+    await async_view(request)
+    return Response({"message": response})
