@@ -7,8 +7,6 @@ class User(AbstractUser):
     skills_can_teach = models.ManyToManyField("Skill", related_name="teachers")
     skills_want_to_learn = models.ManyToManyField("Skill", related_name="learners")
     
-
-
 class Skill(models.Model):
     name = models.CharField(max_length=100, unique=True)
     def __str__(self):

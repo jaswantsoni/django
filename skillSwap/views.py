@@ -19,13 +19,10 @@ class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
 
-# def get_user(request):
-#     queryset = Rating.objects.all()
-    
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
 
     @action(detail=False, methods=['get', 'PUT', 'POST'])
     def top_teachers(self, request):
