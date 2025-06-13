@@ -7,28 +7,40 @@ SECRET_KEY = 'django-insecure-9!#4fd7gk5qbrv^3hknj2dnl816eunwwg_pb14cp!vp-3yl&0@
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
-AUTH_USER_MODEL = 'User'
+ALLOWED_HOSTS = ['hp', '127.0.0.1', 'localhost']
 
-AUTH_USER_MODEL = 'fitnessApp.User' # THIS LINE HAS BEEN REMOVED/COMMENTED OUT TO USE DEFAULT USER MODEL
+AUTH_USER_MODEL = 'fitnessApp.User'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
 INSTALLED_APPS = [
-    'fitnessApp', # Your app is listed first
+    'fitnessApp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
+    'rest_framework_simplejwt',
 ]
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5,
+}
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -38,12 +50,19 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'config.urls' # Ensure this matches your project name if different
+CORS_ALLOWED_ORIGINS=[
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'fitnessApp', 'templates', 'registration')], # <--- IMPORTANT: Changed to include 'registration'
+        'DIRS': [os.path.join(BASE_DIR, 'fitnessApp', 'templates', 'registration')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -55,7 +74,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION =  'config.wsgi.application' # Ensure this matches your project name if different
+WSGI_APPLICATION =  'config.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -90,11 +109,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    BASE_DIR / "",
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
