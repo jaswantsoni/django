@@ -1,0 +1,8 @@
+in postman
+baseurl/movieApp/api
+
+
+to insert data
+go to POST and in scripts write json version of data row and then POST.
+
+make DELETE; PUT 

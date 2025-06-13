@@ -4,7 +4,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Genre(models.Model):
     name = models.CharField(max_length=100, unique=True)
-
+    
     def __str__(self):
         return self.name
 
@@ -13,21 +13,19 @@ class Movie(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     
-    def average_storyline(self):
-        return self.reviews.aggregate(models.Avg('storyline_score'))['storyline_score__avg']
-    
-    def average_visual(self):
-        return self.reviews.aggregate(models.Avg('visual_score'))['visual_score__avg']
-    
-    def average_soundtrack(self):
-        return self.reviews.aggregate(models.Avg('soundtrack_score'))['soundtrack_score__avg']
+    def get_average_scores(self):
+        return self.reviews.aggregate(
+            avg_story=models.Avg('storyline_score'),
+            avg_visual=models.Avg('visual_score'),
+            avg_sound=models.Avg('soundtrack_score')
+        )
     
     def __str__(self):
         return self.title
 
 class Review(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='reviews')
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='movie_reviews')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     comment = models.TextField()
     storyline_score = models.PositiveIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)]
@@ -40,10 +38,14 @@ class Review(models.Model):
     )
     breakdown_pdf = models.FileField(upload_to='breakdowns/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    is_approved = models.BooleanField(default=False)  # Admin must approve reviews
+    is_approved = models.BooleanField(default=False)
 
     def average_score(self):
-        return (self.storyline_score + self.visual_score + self.soundtrack_score) / 3
+        scores = [self.storyline_score, self.visual_score, self.soundtrack_score]
+        valid_scores = [s for s in scores if s is not None]
+        if not valid_scores:
+            return 0
+        return sum(valid_scores) / len(valid_scores)
 
     def __str__(self):
-        return f"Review for {self.movie.title} by {self.author.username}"
+        return f"{self.movie.title} - {self.author.username}"

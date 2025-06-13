@@ -28,19 +28,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'auth.User'
-
-LOGIN_URL = 'accounts/login/'  # or your login page URL
-LOGIN_REDIRECT_URL = 'registration/login.html'  # where to redirect after login
-
-
-
+AUTH_USER_MODEL = 'reviewApp.User'
 
 # Application definition
 
 INSTALLED_APPS = [
     #'testApp',
+    'reviewApp',
     'movieApp',
+    'rest_framework', 
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,6 +47,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,6 +55,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -149,5 +151,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Auth redirect
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = 'movie:create_review'
+LOGIN_REDIRECT_URL = '/submit/'
 LOGOUT_REDIRECT_URL='movie:welcome'
+
+# REST Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}

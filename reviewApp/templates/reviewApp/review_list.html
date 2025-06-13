@@ -1,0 +1,14 @@
+<h2>Movie Reviews</h2>
+<ul>
+  {% for review in reviews %}
+    <li>
+      <strong>{{ review.movie_title }}</strong> ({{ review.genre }})<br>
+      Storyline: {{ review.storyline_score }}<br>
+      Visuals: {{ review.visual_score }}<br>
+      Soundtrack: {{ review.soundtrack_score }}<br>
+      Avg Score: {{ review.average_score|floatformat:2 }}<br>
+      PDF: <a href="{{ review.pdf_upload.url }}">Download</a><br>
+      Review: {{ review.review_text }}
+    </li>
+  {% endfor %}
+</ul>
