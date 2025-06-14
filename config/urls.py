@@ -1,25 +1,8 @@
-"""
-URL configuration for config project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from skillSwap.views import (SkillViewSet, SkillSessionViewSet, RatingViewSet, UserViewSet, )
-
+from skillSwap.views import SkillViewSet, SkillSessionViewSet, RatingViewSet, UserViewSet
+from skillSwap import views  # <-- we will create a frontend view
 
 router = DefaultRouter()
 router.register(r'skills', SkillViewSet, basename='skills')
@@ -27,9 +10,13 @@ router.register(r'sessions', SkillSessionViewSet, basename='sessions')
 router.register(r'ratings', RatingViewSet, basename='ratings')
 router.register(r'users', UserViewSet, basename='users')
 
-
 urlpatterns = [
-path('admin/', admin.site.urls),
-path('skill-swap/', include(router.urls)),
-path("api/", include)
+    path('admin/', admin.site.urls),
+    
+    path('', views.index, name='index'),
+    path('users/', views.users_page, name='users_page'),
+    path('skills/', views.skills_page, name='skills_page'),
+    path('sessions/', views.sessions_page, name='sessions_page'),
+    
+    path('api/skill-swap/', include(router.urls)),
 ]

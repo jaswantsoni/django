@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Skills - Skill Swap</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+
+<h1>Skills</h1>
+<table id="skillsTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Skill Name</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    fetch("/api/skill-swap/skills/")
+        .then(res => res.json())
+        .then(data => {
+            console.log("API Response:", data); 
+
+            let skills = [];
+
+            
+            if (Array.isArray(data.results)) {
+                skills = data.results;
+            } else if (Array.isArray(data)) {
+                skills = data;
+            } else {
+                console.error("Unexpected data format", data);
+                return;  
+            }
+
+            const tbody = document.querySelector("#skillsTable tbody");
+
+            skills.forEach(skill => {
+                const row = `<tr>
+                                <td>${skill.id}</td>
+                                <td>${skill.name}</td>
+                             </tr>`;
+                tbody.innerHTML += row;
+            });
+        })
+        .catch(err => console.error("Fetch Error:", err));
+</script>
+
+</body>
+</html>

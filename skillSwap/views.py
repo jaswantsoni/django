@@ -5,6 +5,8 @@ from .permissions import IsVerifiedUser
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from django.db.models import Count
+from django.shortcuts import render
+
 
 class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
@@ -22,6 +24,19 @@ class RatingViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+def index(request):
+    return render(request, 'index.html')
+
+def users_page(request):
+    return render(request, 'users.html')
+
+def skills_page(request):
+    return render(request, 'skills.html')
+
+def sessions_page(request):
+    return render(request, 'sessions.html')
 
 
     @action(detail=False, methods=['get', 'PUT', 'POST'])
