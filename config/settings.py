@@ -43,6 +43,7 @@ MEDIA_ROOT = BASE_DIR / 'uploads'
 
 INSTALLED_APPS = [
     'corsheaders',
+    'college',
     'skillSwap',
     'rest_framework',
     'django.contrib.admin',
