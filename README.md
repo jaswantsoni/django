@@ -18,16 +18,24 @@
 
 ### Working URLs
 ```
-    "skills": "http://127.0.0.1:8000/skill-swap/skills/",
-    "sessions": "http://127.0.0.1:8000/skill-swap/sessions/",
-    "ratings": "http://127.0.0.1:8000/skill-swap/ratings/",
-    "users": "http://127.0.0.1:8000/skill-swap/users/"
+    "skills": "http://127.0.0.1:8000/api/skill-swap/skills/",
+    "sessions": "http://127.0.0.1:8000/api/skill-swap/sessions/",
+    "ratings": "http://127.0.0.1:8000/api/skill-swap/ratings/",
+    "users": "http://127.0.0.1:8000/api/skill-swap/users/"
+```
+### Frontend URLs
+```
+Index.html : http://127.0.0.1:8000/
+User.html : http://127.0.0.1:8000/users/
+Skills.html : http://127.0.0.1:8000/skills/
+Sessions.html : http://127.0.0.1:8000/sessions/
 ```
 
 ### Future Updates
 | Action              | Method   | Endpoint                          |
 | ------------------- | -------- | --------------------------------- |
-| List/Add Skills     | GET/POST | `/skill-swap/skills/`             |
-| Create SkillSession | POST     | `/skill-swap/sessions/`           |
-| Rate Session        | POST     | `/skill-swap/ratings/`            |
-| Top 5 Teachers      | GET      | `/skill-swap/users/top_teachers/` |
+| List/Add Skills     | GET/POST | `/api/skill-swap/skills/`             |
+| Create SkillSession | POST     | `/api/skill-swap/sessions/`           |
+| Rate Session        | POST     | `/api/skill-swap/ratings/`            |
+| Top 5 Teachers      | GET      | `/api/skill-swap/users/top_teachers/` |
+
