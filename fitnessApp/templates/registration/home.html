@@ -3,60 +3,95 @@
 {% block title %}Home - Fitness Tracker{% endblock %}
 
 {% block content %}
-<h2 class="text-3xl font-extrabold text-gray-900 text-center mb-6">Your Fitness Dashboard</h2>
+<h2 class="text-3xl font-extrabold text-gray-900 text-center mb-8">Your Fitness Dashboard</h2>
 
-<div class="mb-8 p-6 bg-indigo-50 rounded-lg shadow-inner">
-    <h3 class="text-2xl font-semibold text-indigo-800 mb-4">Add New Activity</h3>
-    <form method="post" class="space-y-4">
-        {% csrf_token %}
-        {% for field in fitness_entry_form %}
-            <div class="mb-3">
-                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                    {{ field.label }}
-                </label>
-                {{ field }}
-                {% if field.help_text %}
-                    <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
-                {% endif %}
-                {% for error in field.errors %}
-                    <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endfor %}
-        {% if fitness_entry_form.non_field_errors %}
-            <div class="text-red-500 text-sm mb-4">
-                {% for error in fitness_entry_form.non_field_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-        <button type="submit" class="w-full py-3 px-4 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-300">
-            Log Activity
-        </button>
-    </form>
+<!-- Fitness Overview Section -->
+<div class="mb-10 p-6 bg-blue-100 rounded-lg shadow-lg border border-blue-200">
+    <h3 class="text-2xl font-semibold text-blue-800 mb-4 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        Fitness Overview
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+        <div class="p-4 bg-white rounded-md shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm">Total Activities Logged</p>
+            <p class="text-4xl font-bold text-blue-600 mt-1">
+                {{ fitness_entries|length }}
+            </p>
+        </div>
+        <div class="p-4 bg-white rounded-md shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm">Total Duration (minutes)</p>
+            <p class="text-4xl font-bold text-blue-600 mt-1">
+                {% with total_duration=0 %}
+                    {% for entry in fitness_entries %}
+                        {% with total_duration=total_duration|add:entry.duration_minutes %}{% endwith %}
+                    {% endfor %}
+                    {{ total_duration }}
+                {% endwith %}
+            </p>
+        </div>
+    </div>
+    {% if fitness_entries %}
+        <p class="mt-6 text-center text-lg text-blue-700 font-medium">
+            Keep up the great work! Your progress is inspiring!
+        </p>
+    {% else %}
+        <p class="mt-6 text-center text-lg text-blue-700 font-medium">
+            No activities logged yet.
+        </p>
+    {% endif %}
+</div>
+
+<!-- Button to Log New Activity -->
+<div class="text-center mb-10">
+    <a href="{% url 'add_activity' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 -ml-1 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        Log New Activity
+    </a>
 </div>
 
 <div class="w-full">
-    <h3 class="text-2xl font-semibold text-gray-900 mb-4">Your Recent Activities</h3>
+    <h3 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H5a2 2 0 00-2 2v2m14 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 11H5" />
+        </svg>
+        Your Recent Activities
+    </h3>
     {% if fitness_entries %}
         <ul class="space-y-4">
             {% for entry in fitness_entries %}
-                <li class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-xl font-bold text-indigo-700">{{ entry.activity_type }}</span>
-                        <span class="text-sm text-gray-500">{{ entry.date_recorded|date:"M d, Y H:i" }}</span>
+                <li class="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transform hover:scale-105 transition-transform duration-200 ease-in-out">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xl font-bold text-indigo-700 flex items-center">
+                            {% if entry.activity_type == 'Running' %}🏃{% elif entry.activity_type == 'Weightlifting' %}🏋️‍♀️{% elif entry.activity_type == 'Cycling' %}🚴{% elif entry.activity_type == 'Swimming' %}🏊‍♀️{% elif entry.activity_type == 'Yoga' %}🧘‍♀️{% elif entry.activity_type == 'Walking' %}🚶{% else %}⭐{% endif %}
+                            <span class="ml-2">{{ entry.activity_type }}</span>
+                        </span>
+                        <span class="text-sm text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {{ entry.date_recorded|date:"M d, Y H:i" }}
+                        </span>
                     </div>
                     <p class="text-gray-700 mb-2">
-                        Duration: <span class="font-semibold">{{ entry.duration_minutes }} minutes</span>
+                        <span class="font-semibold text-gray-800">Duration:</span>
+                        <span class="text-indigo-600 font-bold">{{ entry.duration_minutes }} minutes</span>
                     </p>
                     {% if entry.notes %}
-                        <p class="text-gray-600 text-sm italic">"{{ entry.notes }}"</p>
+                        <p class="text-gray-600 text-sm italic border-l-4 border-gray-200 pl-3 py-1">"{{ entry.notes }}"</p>
                     {% endif %}
+                    {# This link is non-functional without a detail view, but adds interactivity #}
+                    <div class="mt-3 text-right">
+                        <a href="#" class="text-blue-500 hover:text-blue-700 text-sm font-medium transition duration-200">View Details &rarr;</a>
+                    </div>
                 </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p class="text-gray-600 text-center py-8">No fitness activities logged yet. Start by adding one above!</p>
+        <p class="text-gray-600 text-center py-8 text-lg">No fitness activities logged yet. Get started by clicking "Log New Activity" above!</p>
     {% endif %}
 </div>
 {% endblock %}

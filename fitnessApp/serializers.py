@@ -1,24 +1,51 @@
 from rest_framework import serializers
 from .models import User, FitnessEntry
-
+from django.contrib.auth.password_validation import validate_password
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'phone_number', 'age']
+        
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'date_joined', 'last_login']
+        
+        read_only_fields = ['id', 'date_joined', 'last_login']
+
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+   
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    
+    password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'phone_number', 'age', 'password']
+       
+        fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name']
+       
+        extra_kwargs = {
+            'first_name': {'required': False}, 
+            'last_name': {'required': False},  
+            'email': {'required': True} 
+        }
 
+   
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+        return attrs
+
+    
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        
+        validated_data.pop('password2')
+       
+        user = User.objects.create_user(**validated_data)
+        return user
+
 
 class FitnessEntrySerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
-
     class Meta:
         model = FitnessEntry
-        fields = ['id', 'user', 'activity_type', 'duration_minutes', 'date_recorded', 'notes']
+        
+        fields = ['id', 'user', 'activity_type', 'duration_minutes', 'notes', 'date_recorded']
+        read_only_fields = ['id', 'user', 'date_recorded']
+
