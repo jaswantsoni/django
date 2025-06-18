@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 import os
 
@@ -36,7 +37,7 @@ INSTALLED_APPS = [
     #'testApp',
     'reviewApp',
     'movieApp',
-    'rest_framework', 
+    'rest_framework', #for api
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,10 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework_simplejwt', #for jwt
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    'reviewApp.middleware'
+    'corsheaders.middleware.CorsMiddleware', #for integraqtion with react
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -150,13 +153,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Auth redirect
+# just use this variable in html page
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/submit/'
+LOGIN_REDIRECT_URL = '/form/'  #/submit/
 LOGOUT_REDIRECT_URL='movie:welcome'
 
 # REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication', #for JWT
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -164,4 +169,35 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+# JWT Settings
+SIMPLE_JWT = {
+    # Token lifetime settings
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Changed from 60 to 30 minutes
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Changed from 1 to 7 days
+   
+    # Token refresh settings
+    'ROTATE_REFRESH_TOKENS': True,  # Generate new refresh token when refreshing
+    'BLACKLIST_AFTER_ROTATION': True,  # Blacklist old refresh tokens
+   
+    # Signature settings
+    'ALGORITHM': 'HS512',  # Changed from HS256 to HS512 for stronger signature
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+   
+    # Token header settings
+    'AUTH_HEADER_TYPES': ('Bearer', 'JWT'),  # Accept both Bearer and JWT in header
+   
+    # Token payload settings
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+   
+    # Additional settings
+    'JTI_CLAIM': 'jti',  # JWT ID claim
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=30),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
 }
