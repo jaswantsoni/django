@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import WatchEntry, Post, Investment
+from .models import WatchEntry, Post, Investment, BlockedIP
 from .services import CryptoService
 from django.db.models import Count
 from django.contrib.auth import login
@@ -10,6 +10,10 @@ from django.contrib.auth.forms import UserCreationForm
 from testApp.models import User
 from django import forms
 import json
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+from rest_framework import status
 
 from django.views.generic import ListView, DetailView, CreateView, FormView, RedirectView, View, TemplateView
 from django.urls import reverse_lazy
@@ -142,6 +146,7 @@ class AddInvestmentView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        coin_symbol = form.cleaned_data['coin_symbol']
        
         price_data = CryptoService.get_coin_price(coin_symbol)
         if price_data and coin_symbol in price_data:
@@ -162,3 +167,58 @@ async def calling_sync_view(request):
     response = sync_view(request)
     await async_view(request)
     return Response({"message": response})
+
+
+ 
+ 
+ 
+# IP Blocking API endpoints
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def block_ip(request):
+    """Block an IP address"""
+    ip_address = request.data.get('ip_address')
+    reason = request.data.get('reason', '')
+   
+    if not ip_address:
+        return Response({'error': 'IP address is required'}, status=status.HTTP_400_BAD_REQUEST)
+   
+    # Create or update the blocked IP
+    blocked_ip, created = BlockedIP.objects.update_or_create(
+        ip_address=ip_address,
+        defaults={'reason': reason}
+    )
+   
+    # Clear cache for this IP
+    from django.core.cache import cache
+    cache.delete(f'blocked_ip_{ip_address}')
+   
+    if created:
+        return Response({'message': f'IP {ip_address} has been blocked'}, status=status.HTTP_201_CREATED)
+    else:
+        return Response({'message': f'IP {ip_address} block has been updated'}, status=status.HTTP_200_OK)
+ 
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def unblock_ip(request, ip_address):
+    """Unblock an IP address"""
+    try:
+        blocked_ip = BlockedIP.objects.get(ip_address=ip_address)
+        blocked_ip.delete()
+       
+        # Clear cache for this IP
+        from django.core.cache import cache
+        cache.delete(f'blocked_ip_{ip_address}')
+       
+        return Response({'message': f'IP {ip_address} has been unblocked'}, status=status.HTTP_200_OK)
+    except BlockedIP.DoesNotExist:
+        return Response({'error': f'IP {ip_address} is not blocked'}, status=status.HTTP_404_NOT_FOUND)
+ 
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def list_blocked_ips(request):
+    """List all blocked IPs"""
+    blocked_ips = BlockedIP.objects.all().order_by('ip_address')
+    data = [{'ip_address': ip.ip_address, 'reason': ip.reason, 'date_added': ip.date_added} for ip in blocked_ips]
+    return Response(data)
+ 
