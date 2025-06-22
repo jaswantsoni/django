@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('activity_type', models.CharField(max_length=100)),
-                ('duration_minutes', models.IntegerField()),
+                ('duration', models.IntegerField()),
                 ('date_recorded', models.DateTimeField(auto_now_add=True)),
                 ('notes', models.TextField(blank=True, null=True)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fitness_entries', to=settings.AUTH_USER_MODEL)),

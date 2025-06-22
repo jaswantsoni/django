@@ -1,0 +1,129 @@
+# Django Fitness Tracker App
+
+This is a fitness tracking web application built using Django. It allows users to log daily fitness activities, track their consistency with streaks, and view total activity time. The app also includes user registration and login (session and JWT-based), IP blocking by admin, and dynamic front-end with Tailwind CSS.
+
+## Features
+
+- User Registration and Login
+- JWT-based API Authentication
+- Session-based Web Authentication
+- Log Daily Fitness Activities
+- Track Streak Count for Consistency
+- Admin-Controlled IP Blocking
+- Activity Pagination and Total Duration Tracking
+
+## Tech Stack
+
+- **Backend**: Django 5.x
+- **API**: Django REST Framework with SimpleJWT
+- **Frontend**: Django Templates with Tailwind CSS
+- **Database**: MySQL
+- **Forms**: Django Forms
+- **Pagination**: Django Paginator
+- **Middleware & Hooks**: Custom Middleware, Hooks, Signals
+
+## Project Structure
+
+```
+fitnessApp/
+├── models.py          
+├── views.py           
+├── forms.py           
+├── serializers.py     
+├── hooks.py           
+├── middleware.py      
+├── signals.py         
+├── templates/
+│   ├── base.html
+│   ├── login.html
+│   ├── register.html
+│   ├── home.html
+│   └── add-activity.html
+├── urls.py            
+```
+
+## Authentication
+
+### Session-Based
+
+- LoginTemplateView: Validates form credentials and starts a session.
+- LogoutTemplateView: Ends the session.
+
+### JWT-Based
+
+- /api/login/: Authenticates user, returns JWT tokens.
+- /api/logout/: Blacklists refresh token.
+- /api/register/: Registers a new user.
+
+## Streak Tracking Logic
+
+- Logic added in FitnessEntry save method.
+- If user logs on a consecutive day, streak increases.
+- Else, streak resets.
+- Value saved in the user model.
+
+## Hooks & Signals
+
+- Hooks handle custom logic injection during fitness entry save.
+- Signals can be used for future achievements or updates.
+
+## Forms
+
+- LoginForm: Validates username/password.
+- RegisterForm: Handles user registration.
+- FitnessEntryForm: Logs title, activity type, duration, and notes.
+
+## Middleware
+
+- Checks client IP.
+- Blocks request if IP exists in BlockedIP table.
+
+## Admin IP Block Management
+
+- Model: BlockedIP
+- API:
+  - POST /api/block_ip/
+  - DELETE /api/unblock_ip/<ip>/
+  - GET /api/list_blocked_ips/
+
+## Home Dashboard
+
+- Class: HomeTemplateView
+- Displays user streak and paginated recent fitness logs.
+
+## Add Activity Page
+
+- Class: AddFitnessEntryTemplateView
+- Displays fitness entry form
+- On POST: Saves data and updates streak
+
+## API Endpoints
+
+| Method | Endpoint             | Description            |
+|--------|----------------------|------------------------|
+| POST   | /api/login/          | Returns JWT tokens     |
+| POST   | /api/logout/         | Blacklists token       |
+| POST   | /api/register/       | Registers new user     |
+| GET    | /api/fitness/        | Lists fitness logs     |
+| POST   | /api/fitness/        | Creates fitness log    |
+
+## Setup Instructions
+
+
+
+`
+
+1 Migrate DB and start server:
+```bash
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+2 Visit:
+```
+http://127.0.0.1:8000/
+```
+
+

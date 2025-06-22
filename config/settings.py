@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -7,7 +8,7 @@ SECRET_KEY = 'django-insecure-9!#4fd7gk5qbrv^3hknj2dnl816eunwwg_pb14cp!vp-3yl&0@
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['hp', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'fitnessApp.User'
 
@@ -26,6 +27,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -35,11 +37,42 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 5,
+    }
+SIMPLE_JWT = {
+    # Token lifetime settings
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Changed from 60 to 30 minutes
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Changed from 1 to 7 days
+   
+    # Token refresh settings
+    'ROTATE_REFRESH_TOKENS': True,  # Generate new refresh token when refreshing
+    'BLACKLIST_AFTER_ROTATION': True,  # Blacklist old refresh tokens
+   
+    # Signature settings
+    'ALGORITHM': 'HS512',  # Changed from HS256 to HS512 for stronger signature
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+   
+    # Token header settings
+    'AUTH_HEADER_TYPES': ('Bearer', 'JWT'),  # Accept both Bearer and JWT in header
+   
+    # Token payload settings
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+   
+    # Additional settings
+    'JTI_CLAIM': 'jti',  # JWT ID claim
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=30),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
 }
+ 
+ 
 
 MIDDLEWARE = [
+   
+    'fitnessApp.middleware.LogAndBlockIPMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -49,7 +82,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+BLOCKED_IPS = [
+    '192.168.1.100',
+    '10.0.0.1',
+    # Add more IPs as needed
+]
 CORS_ALLOWED_ORIGINS=[
     
 ]

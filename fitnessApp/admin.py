@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import User, FitnessEntry
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import BlockedIP
 
 class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
@@ -9,3 +10,4 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(FitnessEntry)
+admin.site.register(BlockedIP)

@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='fitnessentry',
-            name='duration_minutes',
+            name='duration',
             field=models.PositiveIntegerField(),
         ),
     ]
