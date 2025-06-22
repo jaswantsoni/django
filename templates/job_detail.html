@@ -1,0 +1,56 @@
+<!-- templates/job_detail.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>{{ job.title }}</h2>
+    </div>
+    <div class="card-body">
+        <p class="card-text">{{ job.description }}</p>
+        <p class="text-muted">Posted by: {{ job.posted_by.username }} on {{ job.created_at|date:"M d, Y" }}</p>
+        
+        {% if user.is_authenticated %}
+            {% if not user.is_recruiter %}
+                <a href="{% url 'apply-job' job.pk %}" class="btn btn-primary">Apply for this Job</a>
+            {% elif user == job.posted_by %}
+                <div class="mt-4">
+                    <h4>Applications for this job:</h4>
+                    {% if applications %}
+                        <div class="list-group mt-3">
+                            {% for application in applications %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5>{{ application.candidate.username }}</h5>
+                                        <p class="mb-1">Applied on: {{ application.created_at|date:"M d, Y" }}</p>
+                                        {% if application.cover_letter %}
+                                        <div class="mt-2">
+                                            <h6>Cover Letter:</h6>
+                                            <p>{{ application.cover_letter }}</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <a href="mailto:{{ application.candidate.email }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-envelope"></i> Contact
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mt-3">No applications yet.</div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="text-info">Please <a href="{% url 'login' %}">login</a> to apply for this job.</p>
+        {% endif %}
+    </div>
+</div>
+
+<a href="{% url 'job-list' %}" class="btn btn-secondary mt-3">Back to Job List</a>
+{% endblock %}

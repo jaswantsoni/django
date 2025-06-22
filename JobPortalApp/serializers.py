@@ -5,7 +5,7 @@ from JobPortalApp.models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "password", "is_recruiter"]
+        fields = ["username", "password", "is_recruiter", "email"]
 
 
 class JobPostSerializer(serializers.ModelSerializer):
