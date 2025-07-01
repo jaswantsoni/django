@@ -6,9 +6,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from .models import JobPost, Application
 from .forms import UserRegistrationForm, JobPostForm, ApplicationForm
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from .serializers import *
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+
+from rest_framework.decorators import api_view, permission_classes, parser_classes
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+from .utils import S3ImageUploader
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -42,17 +49,17 @@ def home(request):
 
 
 def register(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.email = form.cleaned_data['email']
+            user.email = form.cleaned_data["email"]
             user.save()
             login(request, user)
-            return redirect('home')
+            return redirect("home")
     else:
         form = UserRegistrationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, "register.html", {"form": form})
 
 
 def user_login(request):
@@ -121,3 +128,109 @@ class ApplicationCreateView(LoginRequiredMixin, CreateView):
         job_post = JobPost.objects.get(pk=self.kwargs["pk"])
         form.instance.job_post = job_post
         return super().form_valid(form)
+
+
+# Image Upload API endpoints
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def upload_image(request):
+    """Upload image to AWS S3"""
+    if "image" not in request.FILES:
+        return Response(
+            {"error": "No image file provided"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    image_file = request.FILES["image"]
+    folder = request.data.get("folder", "images/")
+
+    # Initialize S3 uploader
+    uploader = S3ImageUploader()
+
+    # Upload image
+    result = uploader.upload_image(image_file, folder)
+
+    if result["success"]:
+        return Response(
+            {
+                "message": "Image uploaded successfully",
+                "url": result["url"],
+                "key": result["key"],
+                "filename": result["filename"],
+            },
+            status=status.HTTP_201_CREATED,
+        )
+    else:
+        return Response({"error": result["error"]}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_image(request):
+    """Delete image from AWS S3"""
+    s3_key = request.data.get("key")
+
+    if not s3_key:
+        return Response(
+            {"error": "S3 key is required"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Initialize S3 uploader
+    uploader = S3ImageUploader()
+
+    # Delete image
+    result = uploader.delete_image(s3_key)
+
+    if result["success"]:
+        return Response(
+            {"message": "Image deleted successfully"}, status=status.HTTP_200_OK
+        )
+    else:
+        return Response({"error": result["error"]}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def upload_multiple_images(request):
+    """Upload multiple images to AWS S3"""
+    if "images" not in request.FILES:
+        return Response(
+            {"error": "No image files provided"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    images = request.FILES.getlist("images")
+    folder = request.data.get("folder", "images/")
+
+    if len(images) > 10:  # Limit to 10 images
+        return Response(
+            {"error": "Maximum 10 images allowed"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Initialize S3 uploader
+    uploader = S3ImageUploader()
+
+    results = []
+    errors = []
+
+    for image in images:
+        result = uploader.upload_image(image, folder)
+        if result["success"]:
+            results.append(
+                {
+                    "filename": result["filename"],
+                    "url": result["url"],
+                    "key": result["key"],
+                }
+            )
+        else:
+            errors.append({"filename": image.name, "error": result["error"]})
+
+    return Response(
+        {
+            "message": f"{len(results)} images uploaded successfully",
+            "uploaded": results,
+            "errors": errors,
+        },
+        status=status.HTTP_201_CREATED if results else status.HTTP_400_BAD_REQUEST,
+    )
