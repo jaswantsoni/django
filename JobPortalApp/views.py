@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
-from .utils import S3ImageUploader
+# from .utils import S3ImageUploader
 
 
 class UserViewSet(viewsets.ModelViewSet):
