@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'movieApp',
     'rest_framework', #for api
     'corsheaders',
+    #'storage',#for aws integration
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,7 +50,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'reviewApp.middleware'
+    'reviewApp.middleware.IPBlockingMiddleware',  # Custom IP blocking middleware
+    'reviewApp.middleware.RequestLoggerMiddleware',
     'corsheaders.middleware.CorsMiddleware', #for integraqtion with react
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -58,6 +60,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+#for IP Blocking
+BLOCKED_IPS = [
+    '192.168.1.100',
+    '10.0.0.1',
+    # Add more IPs as needed
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -70,8 +79,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'testApp/templates'),
-            os.path.join(BASE_DIR, 'movieApp/templates'),
+            #os.path.join(BASE_DIR, 'testApp/templates'),
+            #os.path.join(BASE_DIR, 'movieApp/templates'),
             ],  # Directory for custom templates
         'APP_DIRS': True,
         'OPTIONS': {
@@ -155,8 +164,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Auth redirect
 # just use this variable in html page
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/form/'  #/submit/
-LOGOUT_REDIRECT_URL='movie:welcome'
+LOGIN_REDIRECT_URL = '/index/'  #/submit/
+LOGOUT_REDIRECT_URL='home'
 
 # REST Framework settings
 REST_FRAMEWORK = {
@@ -201,3 +210,12 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=30),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
 }
+
+from dotenv import load_dotenv
+from pathlib import Path
+load_dotenv(dotenv_path=BASE_DIR / ".env")
+SECRET_KEY = os.getenv("SECRET_KEY")
+AWS_ACCESS_KEY_ID =os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY =os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_S3_REGION_NAME=os.getenv("AWS_S3_REGION_NAME")
+AWS_STORAGE_BUCKET_NAME=os.getenv("AWS_STORAGE_BUCKET_NAME")
