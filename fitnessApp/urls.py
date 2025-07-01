@@ -1,10 +1,10 @@
 from django.urls import path, include
+from . import views
 from rest_framework.routers import DefaultRouter
 from .views import (
     UserViewSet, FitnessEntryViewSet,
     RegisterView, login_view, logout_view,
     HomeTemplateView, AddFitnessEntryTemplateView,AchievementViewSet,LoginTemplateView, RegisterTemplateView, LogoutTemplateView,
-    
     block_ip, unblock_ip, list_blocked_ips
 )
 from rest_framework_simplejwt.views import (
@@ -25,7 +25,7 @@ urlpatterns = [
     path('api/logout/', logout_view, name='api_logout'),
 
     # JWT Token Auth
-    path('api/token', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+   path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
@@ -41,5 +41,9 @@ urlpatterns = [
     path('api/ip/block/', block_ip, name='block_ip'),
     path('api/ip/unblock/<str:ip_address>/', unblock_ip, name='unblock_ip'),
     path('api/ip/blocked/', list_blocked_ips, name='list_blocked_ips'),
+
+    #path('api/upload/image/', views.upload_image, name='upload_image'),
+    #path('api/upload/images/', views.upload_multiple_images, name='upload_multiple_images'),
+    #path('api/delete/image/', views.delete_image, name='delete_image'),
 ]
 

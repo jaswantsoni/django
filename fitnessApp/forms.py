@@ -3,11 +3,18 @@ from django.contrib.auth.forms import AuthenticationForm
 from .models import FitnessEntry, User
 from django.contrib.auth.forms import UserCreationForm
 
-class LoginForm(AuthenticationForm):
-    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={
-        'class': 'form-control', 'placeholder': 'Username'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={
-        'class': 'form-control', 'placeholder': 'Password'}))
+from django import forms
+
+class LoginForm(forms.Form):
+    username = forms.CharField(
+        max_length=150,
+        label="Username",
+        widget=forms.TextInput(attrs={'class': 'form-input'})
+    )
+    password = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(attrs={'class': 'form-input'})
+    )
 
 
 class RegisterForm(UserCreationForm):
