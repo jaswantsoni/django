@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Your Activities{% endblock %}
+{% block content %}
+
+<h2 class="text-2xl font-bold mb-4">Your Recent Activities</h2>
+
+<!-- Filter / Search Form -->
+<form method="get" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+  <input type="text" name="search" value="{{ search }}" placeholder="Search by activity..." class="px-3 py-2 border rounded" />
+
+  <select name="sort" class="px-3 py-2 border rounded">
+    <option value="date_desc" {% if sort_by == 'date_desc' %}selected{% endif %}>Newest First</option>
+    <option value="date_asc" {% if sort_by == 'date_asc' %}selected{% endif %}>Oldest First</option>
+    <option value="duration_desc" {% if sort_by == 'duration_desc' %}selected{% endif %}>Duration: High to Low</option>
+    <option value="duration_asc" {% if sort_by == 'duration_asc' %}selected{% endif %}>Duration: Low to High</option>
+  </select>
+
+  <input type="date" name="start" value="{{ start_date }}" class="px-3 py-2 border rounded" />
+  <input type="date" name="end" value="{{ end_date }}" class="px-3 py-2 border rounded" />
+
+  <button type="submit" class="col-span-full md:col-span-1 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Apply</button>
+</form>
+
+<!-- Activities List -->
+<div class="space-y-4">
+  {% for activity in entries %}
+  <div class="bg-white shadow rounded p-4">
+    <div class="flex justify-between items-center">
+      <div>
+        <h3 class="font-bold text-indigo-700">🧘 {{ activity.activity_type }}</h3>
+        <p class="text-sm text-gray-600">Duration: {{ activity.duration }} mins</p>
+      </div>
+      <p class="text-sm text-gray-500">{{ activity.date }}</p>
+    </div>
+  </div>
+  {% empty %}
+  <p>No activities found.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -6,3 +6,5 @@ class TestappConfig(AppConfig):
     def ready(self):
         import fitnessApp.signals
         import fitnessApp.my_hooks
+        from django.apps import AppConfig
+

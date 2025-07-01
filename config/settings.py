@@ -39,6 +39,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    
 }
 
 SIMPLE_JWT = {
@@ -125,7 +126,17 @@ DATABASES = {
         'PORT': '3306', 
     }
 }
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# For real email sending, configure SMTP:
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'n02030701@gmail.com'
+EMAIL_HOST_PASSWORD = 'mgxlrwdouxzbjeao'
+EMAIL_USE_TLS = True
+
+DEFAULT_FROM_EMAIL = 'Fitness Tracker <noreply@fitnesstracker.com>'
     
 
     

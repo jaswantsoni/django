@@ -14,8 +14,9 @@ class User(AbstractUser):
 class FitnessEntry(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='fitness_entries')
     title = models.CharField(max_length=100)
-    duration = models.IntegerField(help_text="Duration in minutes")
+    
     date = models.DateField(default=date.today)
+    duration = models.PositiveIntegerField(help_text="Duration in minutes")
 
     ACTIVITY_CHOICES = [
         ('Running', 'Running'),
@@ -31,6 +32,7 @@ class FitnessEntry(models.Model):
     duration = models.PositiveIntegerField()
     notes = models.TextField(blank=True, null=True)
     date_recorded = models.DateTimeField(auto_now_add=True)
+    
 
     class Meta:
         verbose_name_plural = "Fitness Entries"

@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
 
 {% block title %}Home - Fitness Tracker{% endblock %}
-
+<
 {% block content %}
+<div class="text-center my-4">
+    <a href="{% url 'export_csv' %}"
+       class="inline-block px-6 py-3 bg-indigo-600 text-white font-semibold rounded hover:bg-indigo-400 transition">
+        ⬇️ Download Data
+    </a>
+</div>
+
 <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-8">Your Fitness Dashboard</h2>
 
 <!-- Summary Section -->
@@ -25,6 +32,24 @@
             <p class="text-4xl font-bold text-blue-600 mt-1">{{ total_duration }}</p>
         </div>
     </div>
+    <br/>
+    <!-- Filter/Search Bar -->
+<form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded shadow mb-6">
+  <input type="text" name="search" value="{{ search }}" placeholder="Search..." class="px-3 py-2 border rounded" />
+
+  <select name="sort" class="px-3 py-2 border rounded">
+    <option value="date_desc" {% if sort_by == 'date_desc' %}selected{% endif %}>Newest</option>
+    <option value="date_asc" {% if sort_by == 'date_asc' %}selected{% endif %}>Oldest</option>
+    <option value="duration_desc" {% if sort_by == 'duration_desc' %}selected{% endif %}>Duration High-Low</option>
+    <option value="duration_asc" {% if sort_by == 'duration_asc' %}selected{% endif %}>Duration Low-High</option>
+  </select>
+
+  <input type="date" name="start" value="{{ start_date }}" class="px-3 py-2 border rounded" />
+  <input type="date" name="end" value="{{ end_date }}" class="px-3 py-2 border rounded" />
+
+  <button type="submit" class="col-span-full md:col-span-1 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Apply</button>
+</form>
+
 
     {% if total_activities > 0 %}
         <p class="mt-6 text-center text-lg text-blue-700 font-medium">
@@ -55,21 +80,22 @@
     {% endif %}
 </div>
 
-
+<br/>
 <!-- Log New Activity Button -->
 <div class="text-center mb-10">
     <a href="{% url 'add_activity' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 -ml-1 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 -ml-1 mr-2" fill="none" viewBox="0 0 22 22" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
         Log New Activity
     </a>
 </div>
 
+
 <!-- Recent Activities -->
 <div class="w-full">
     <h3 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H5a2 2 0 00-2 2v2m14 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 11H5" />
         </svg>
         Your Recent Activities
@@ -86,7 +112,10 @@
                         </span>
                         <span class="text-sm text-gray-500">{{ entry.date_recorded|date:"M d, Y H:i" }}</span>
                     </div>
-                    <p class="text-gray-700 mb-2"><strong>Duration:</strong> {{ entry.duration_minutes }} minutes</p>
+<p class="text-gray-700 mb-2">
+  <strong>Duration:</strong> {{ entry.duration|default:"0" }} minutes
+</p>
+
                     {% if entry.notes %}
                         <p class="text-gray-600 italic border-l-4 border-gray-200 pl-3">"{{ entry.notes }}"</p>
                     {% endif %}
@@ -94,18 +123,27 @@
             {% endfor %}
         </ul>
 
-        <!-- Pagination controls -->
-        <div class="mt-6 flex justify-center space-x-4">
-            {% if fitness_entries.has_previous %}
-                <a href="?page={{ fitness_entries.previous_page_number }}" class="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400">Previous</a>
-            {% endif %}
-            <span class="px-3 py-1 bg-gray-200 rounded">{{ fitness_entries.number }}</span>
-            {% if fitness_entries.has_next %}
-                <a href="?page={{ fitness_entries.next_page_number }}" class="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400">Next</a>
-            {% endif %}
+        <!-- Pagination Navigation -->
+        <div class="mt-6 flex justify-center space-x-2">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">
+              Previous
+            </a>
+          {% endif %}
+
+          <span class="px-4 py-2 bg-indigo-100 rounded">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">
+              Next
+            </a>
+          {% endif %}
         </div>
     {% else %}
-        <p class="text-gray-600 text-center py-8 text-lg">No fitness activities logged yet. Get started by clicking "Log New Activity" above!</p>
+        <p class="text-gray-600 italic">No activities to show yet. Log some workouts!</p>
     {% endif %}
 </div>
+
 {% endblock %}

@@ -1,18 +1,20 @@
 from django.urls import path, include
 from . import views
+from .views import export_fitness_csv
 from rest_framework.routers import DefaultRouter
 from .views import (
     UserViewSet, FitnessEntryViewSet,
     RegisterView, login_view, logout_view,
     HomeTemplateView, AddFitnessEntryTemplateView,AchievementViewSet,LoginTemplateView, RegisterTemplateView, LogoutTemplateView,
-    block_ip, unblock_ip, list_blocked_ips
+    block_ip, unblock_ip, list_blocked_ips,dashboard_view
+
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
 )
-
+# urls.py
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'fitness-entries', FitnessEntryViewSet, basename='fitnessentry')  # <-- Fix applied here
@@ -35,8 +37,8 @@ urlpatterns = [
     path('register/', RegisterTemplateView.as_view(), name='register'),
     path('add-activity/', AddFitnessEntryTemplateView.as_view(), name='add_activity'),
     path('logout/', LogoutTemplateView.as_view(), name='logout'),
-    
-
+    path('dashboard/', dashboard_view, name='dashboard'),
+    path('export/csv/', export_fitness_csv, name='export_csv'),
     # IP Blocking Endpoints
     path('api/ip/block/', block_ip, name='block_ip'),
     path('api/ip/unblock/<str:ip_address>/', unblock_ip, name='unblock_ip'),

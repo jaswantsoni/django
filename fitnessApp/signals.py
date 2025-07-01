@@ -1,8 +1,10 @@
-
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import FitnessEntry, User
 from datetime import timedelta, date
+from django.core.mail import send_mail
+from django.conf import settings
+
 
 @receiver(post_save, sender=FitnessEntry)
 def update_streak(sender, instance, created, **kwargs):
@@ -27,3 +29,13 @@ def update_streak(sender, instance, created, **kwargs):
 
     user.streak_count = streak
     user.save()
+
+@receiver(post_save, sender=User)
+def send_welcome_email(sender, instance, created, **kwargs):
+    if created:
+        subject = 'Welcome to Fitness Tracker!'
+        message = f'Hi {instance.username},\n\nThanks for registering with Fitness Tracker. Get ready to track your activities and stay fit!'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [instance.email]
+
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
