@@ -11,5 +11,11 @@ __pycache__/
 #ignoring the env file
 .env
 
-fastapi-project/
 
+#extra files
+fastapi-project/
+movieApp/
+
+# .Assignment.txt
+# .main issue.docx
+# main issue.docx

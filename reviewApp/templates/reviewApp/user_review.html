@@ -1,0 +1,24 @@
+{% extends 'reviewApp/base.html' %}
+
+{% block title %}My Reviews{% endblock %}
+
+{% block content %}
+  <h2>My Reviews</h2>
+  <div class="row">
+    {% for review in reviews %}
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5>{{ review.movie_title }}</h5>
+            <p>Storyline: {{ review.storyline_score }}</p>
+            <p>Visual: {{ review.visual_score }}</p>
+            <p>Soundtrack: {{ review.soundtrack_score }}</p>
+            <p>{{ review.review_text }}</p>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>You have not submitted any reviews yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

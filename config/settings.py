@@ -214,7 +214,6 @@ SIMPLE_JWT = {
 from dotenv import load_dotenv
 from pathlib import Path
 load_dotenv(dotenv_path=BASE_DIR / ".env")
-SECRET_KEY = os.getenv("SECRET_KEY")
 AWS_ACCESS_KEY_ID =os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY =os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_S3_REGION_NAME=os.getenv("AWS_S3_REGION_NAME")

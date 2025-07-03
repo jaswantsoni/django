@@ -15,9 +15,13 @@ router.register(r'moviereviews', MovieReviewViewSet)
 urlpatterns = [
     path('', views.home, name='home'),
     path('index/', views.index, name='index'),
-    path('submit/', views.submit_review, name='submit'),
     path('reviews/', views.review_list, name='review_list'),
+    path('reviews/<str:movie_title>/', views.movie_reviews, name='movie_reviews'),
+    path('my-reviews/', views.user_reviews, name='user_reviews'),
+    path('submit/', views.submit_review, name='submit'),
     path('signup/', views.signup, name='signup'),
+    path('accounts/logout/', views.logout_view, name='logout'),
+
     
     path('not-verified/', views.not_verified, name='not_verified'),
     #for users that aren't allowed by admin to access certain page, they will be redirected here
@@ -28,7 +32,6 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-    
     
     #for IP Blocking
     #ip Blocking endpoints

@@ -1,2 +1,17 @@
-<h1>Welcome to ReviewApp</h1>
-<p>Please <a href="{% url 'login' %}">Login</a> or <a href="{% url 'signup' %}">Sign Up</a> to get started.</p>
+{% extends 'reviewApp/base.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+  <div class="text-center">
+    <h1>Welcome to the Movie Review App!</h1>
+    {% if user.is_authenticated %}
+      <p>Hello, {{ user.username }}!</p>
+      <a href="{% url 'index' %}" class="btn btn-primary">Go to Dashboard</a>
+    {% else %}
+      <p>Please login to submit or view reviews.</p>
+      <a href="{% url 'login' %}" class="btn btn-success">Login</a>
+      <a href="{% url 'signup' %}" class="btn btn-secondary">Sign Up</a>
+    {% endif %}
+  </div>
+{% endblock %}

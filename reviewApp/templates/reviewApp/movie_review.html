@@ -1,0 +1,25 @@
+{% extends 'reviewApp/base.html' %}
+
+{% block title %}Reviews for {{ movie_title }}{% endblock %}
+
+{% block content %}
+  <h2>Reviews for "{{ movie_title }}"</h2>
+  <div class="row">
+    {% for review in reviews %}
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <p><strong>Author:</strong> {{ review.author.username }}</p>
+            <p><strong>Storyline:</strong> {{ review.storyline_score }}</p>
+            <p><strong>Visual:</strong> {{ review.visual_score }}</p>
+            <p><strong>Soundtrack:</strong> {{ review.soundtrack_score }}</p>
+            <p><strong>PDF:</strong> <a href="{{ review.pdf_upload.url }}">Download</a><br></p>
+            <p><strong>Text:</strong> {{ review.review_text }}</p>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No reviews for this movie yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

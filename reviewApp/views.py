@@ -6,6 +6,7 @@ from .forms import MovieReviewForm
 from .models import MovieReview
 from .decorators import verified_required
 from django.contrib import messages #for message
+from django.shortcuts import get_object_or_404
 
 
 # def is_verified(user):
@@ -30,8 +31,8 @@ def submit_review(request):
             review.author = request.user
             review.save()
 
-            #for signal
-            messages.success(request, '********************** Your review has been submitted!***************************8')
+            #for signal - pop up mssg
+            messages.success(request, 'Your review has been submitted!*')
 
             return redirect('review_list')
     else:
@@ -40,11 +41,29 @@ def submit_review(request):
 
 @login_required
 def review_list(request):
-    from django.db.models import F
-    reviews = MovieReview.objects.annotate(
-        average_score=(F('storyline_score') + F('visual_score') + F('soundtrack_score')) / 3
-    ).order_by('-created_at')
-    return render(request, 'reviewApp/review_list.html', {'reviews': reviews})
+    from django.db.models import F, Avg
+    movies = (
+        MovieReview.objects
+        .values('movie_title')
+        .annotate(avg_score=Avg((F('storyline_score') + F('visual_score') + F('soundtrack_score')) / 3))
+        .order_by('movie_title')
+    )
+    return render(request, 'reviewApp/review_list.html', {'movies': movies})
+
+#shows all rvws for a particular movie
+@login_required
+def movie_reviews(request, movie_title):
+    reviews = MovieReview.objects.filter(movie_title=movie_title)
+    return render(request, 'reviewApp/movie_review.html', {
+        'movie_title': movie_title,
+        'reviews': reviews
+    })
+
+#my own rvws
+@login_required
+def user_reviews(request):
+    reviews = MovieReview.objects.filter(author=request.user)
+    return render(request, 'reviewApp/user_review.html', {'reviews': reviews})
 
 def signup(request):
     if request.method == 'POST':
@@ -59,6 +78,12 @@ def signup(request):
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
 
+from django.contrib.auth import logout as auth_logout
+
+def logout_view(request):
+    auth_logout(request)
+    messages.success(request, "You have been logged out.")
+    return redirect('home')
 
 #from django.http import HttpResponse
 

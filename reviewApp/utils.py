@@ -1,3 +1,4 @@
+#for uploading image to aws bucket
 import boto3
 import uuid
 from django.conf import settings
@@ -110,3 +111,9 @@ class S3ImageUploader:
             # If optimization fails, return original
             image_file.seek(0)
             return image_file
+        
+
+#### for TMDB api displaying movie details 
+import os, dotenv
+API_KEY=os.getenv("API_KEY")
+#API_READ_ACCESS_KEY=os.getenv("API_READ_ACCESS_KEY")
